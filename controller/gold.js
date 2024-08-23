@@ -69,20 +69,63 @@ const getOneGold = async(req,res)=>{
     const getProduct = await ecommerceModel.findOne({productName})
 
     if(!getProduct){
-        res.json({error: "the product you searched for is not available"})
+       return res.json({error: "the product you searched for is not available"})
     }
 
     res.status(200).json({getProduct})
 }
 
+
 // get all gold product
     const getAllGold = async(req,res)=>{
         const getAll = await ecommerceModel.find()
         if(!getAll){
-            res.status(400).status({error: "unable to get all product"})
+           return res.status(400).status({error: "unable to get all product"})
         }
         res.status(200).json({getAll})
     }
 
 
-module.exports = {uploadGold, getOneGold, getAllGold}
+    // update a product already uploaded
+    const updateGold = async(req, res)=>{
+        const {productName} = req.params
+        const findProduct = await ecommerceModel.findOne({productName})
+        if(!findProduct){
+            res.status(400).json({error: "this product does not exist"})
+        }
+        const updateProduct = await ecommerceModel.findOneAndUpdate({productName}, req.body, {runValidator: true, new:true})
+        if(!updateProduct){
+            return res.status(400).json({error: "unable to update this product"}, req.body, {runValidator: true, new:true})
+        }
+        res.status(200).json({message: "updated successfully", updateProduct})
+    }
+
+
+    // delete one product
+    const deleteOneGold = async(req, res)=>{
+       const {productName} =req.params
+       const findProduct = await ecommerceModel.findOne({productName})
+       if(!findProduct){
+           res.status(400).json({error: "this product does not exist"})
+       }
+       const deleteProduct = await ecommerceModel.findOneAndDelete({productName})
+       if(!deleteProduct){
+        return res.status(400).json({error: "unable to delete this product"})
+
+       }
+       res.status(200).json({message: "this product was deleted successfully"})
+    }
+
+
+    // delete all product uploaded
+    // const deleteAllGold = async(req, res)=>{
+       
+    //     const deleteProduct = await ecommerceModel.findAndDelete()
+    //     if(!deleteProduct){
+    //      return res.status(400).json({error: "unable to delete all product"})
+ 
+    //     }
+    //     res.status(200).json({message: "all product was deleted successfully"})
+    //  }
+
+module.exports = {uploadGold, getOneGold, getAllGold, updateGold, deleteOneGold}
