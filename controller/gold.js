@@ -58,7 +58,7 @@ const uploadGold = async(req, res)=>{
         // return res.status(201).json({error: "your product was not created"})
         // }
 
-        return res.status(200).json({message: "product was uploaded successfully", createPost})
+        return res.status(201).json({message: "product was uploaded successfully", createPost})
    
 }
 
