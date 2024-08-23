@@ -75,5 +75,14 @@ const getOneGold = async(req,res)=>{
     res.status(200).json({getProduct})
 }
 
+// get all gold product
+    const getAllGold = async(req,res)=>{
+        const getAll = await ecommerceModel.find()
+        if(!getAll){
+            res.status(400).status({error: "unable to get all product"})
+        }
+        res.status(200).json({getAll})
+    }
 
-module.exports = {uploadGold, getOneGold}
+
+module.exports = {uploadGold, getOneGold, getAllGold}
