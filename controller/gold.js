@@ -118,14 +118,14 @@ const getOneGold = async(req,res)=>{
 
 
     // delete all product uploaded
-    // const deleteAllGold = async(req, res)=>{
+    const deleteAllGold = async(req, res)=>{
        
-    //     const deleteProduct = await ecommerceModel.findAndDelete()
-    //     if(!deleteProduct){
-    //      return res.status(400).json({error: "unable to delete all product"})
+        const deleteProduct = await ecommerceModel.deleteMany()
+        if(!deleteProduct){
+         return res.status(400).json({error: "unable to delete all product"})
  
-    //     }
-    //     res.status(200).json({message: "all product was deleted successfully"})
-    //  }
+        }
+        res.status(200).json({message: "all product was deleted successfully"})
+     }
 
-module.exports = {uploadGold, getOneGold, getAllGold, updateGold, deleteOneGold}
+module.exports = {uploadGold, getOneGold, getAllGold, updateGold, deleteOneGold, deleteAllGold}

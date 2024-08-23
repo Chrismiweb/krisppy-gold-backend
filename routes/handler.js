@@ -9,7 +9,7 @@ router.route('/get-one-gold/:productName').get(getOneGold)
 router.route('/get-all-gold').get(getAllGold)
 router.route('/update-gold/:productName').put(updateGold)
 router.route('/delete-one-gold/:productName').delete(deleteOneGold)
-// router.route('/delete-all-gold').delete(deleteAllGold)
+router.route('/delete-all-gold').delete(deleteAllGold)
 
 
 
