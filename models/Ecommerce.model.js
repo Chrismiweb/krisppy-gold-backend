@@ -3,17 +3,17 @@ const { Schema, model } = require("mongoose");
 const ecommerceSchema = new Schema({
     image: {
         type: String,
-        require: false
+        // require: true
     },
     productName: {
         type: String,
         require: true
     },
-    ProductDescription: {
+    productDescription: {
         type: String,
         require: true
     },
-    ProductPrice: {
+    productPrice: {
         type: Number,
         require: true
     },

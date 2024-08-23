@@ -6,15 +6,13 @@ const app = express()
 const port = 2020;
 app.use(express.json())
 
-app.get('/', router)
+app.use('/', router)
 
 app.get('/', (req,res)=>{
     console.log("app is running well")
 })
 
-app.post('/create-gold', (req,res)=>{
-    
-})
+
 
 
 app.listen(port, async() => {

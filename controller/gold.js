@@ -3,8 +3,9 @@ const express =  require('express')
 // const fileUpload = require('../lib/index');
 const bodyParser = require('body-parser')
 // file upload for images
-// const fileUpload =  require("express-fileupload")
+const fileUpload =  require("express-fileupload")
 const app = express()
+
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -16,33 +17,63 @@ app.use(bodyParser.json())
 app.use(express.json())
 
 // use express file upload 
-// app.use(fileUpload())
+app.use(fileUpload())
 
-// use file upload
 
 // uploading the product
 const uploadGold = async(req, res)=>{
-    try {
-        const {productName, ProductDescription, ProductPrice} = req.body
-        if(!productName, !ProductDescription, !ProductPrice){
-            return res.status(201).json({error: "please fill all inputs "})
-        }
+      const {productName, productDescription, productPrice} = req.body
+      if(!productName || !productDescription || !productPrice){
+        res.status(400).json({error: "please fill all credentials"})
+      }
 
         // uploading images
-       
-        const createPost =  new ecommerceModel({productName, ProductDescription, ProductPrice})
+      
+        // let blogFile;
+        // let uploadPath;
+        // let fileName;
+    
+        // if (!req.files || Object.keys(req.files).length === 0) {
+        //     res.status(400).send('No files were uploaded.');
+        //     return;
+        //   }
+        //   console.log('req.files >>>', req.files); // eslint-disable-line
+    
+        //     blogFile = req.files.image;
+        //     // file name with date (this is optional and not neccessary)
+            
+        //     uploadPath = __dirname + '/uploads/' + blogFile.name;
 
-        if(!createPost){
-        return res.status(201).json({error: "your product was not created"})
-        }
+        //     fileName = '/uploads/' + new Date().getTimezoneOffset() + blogFile.name;
+    
+        //     blogFile.mv(uploadPath, function(err) {
+        //         if (err) {
+        //             return res.status(500).send(err);
+        //             }
+        //     })
+
+        const createPost =  await ecommerceModel.create({ productName, productDescription, productPrice})
+
+        // if(!createPost){
+        // return res.status(201).json({error: "your product was not created"})
+        // }
 
         return res.status(200).json({message: "product was uploaded successfully", createPost})
-    } catch (error) {
-        console.log(error.message)
+   
+}
+
+// get one gold product using productName
+const getOneGold = async(req,res)=>{
+    const {productName} = req.params
+
+    const getProduct = await ecommerceModel.findOne({productName})
+
+    if(!getProduct){
+        res.json({error: "the product you searched for is not available"})
     }
+
+    res.status(200).json({getProduct})
 }
 
 
-
-
-module.exports = {uploadGold}
+module.exports = {uploadGold, getOneGold}
