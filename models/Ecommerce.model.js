@@ -1,10 +1,9 @@
 const { Schema, model } = require("mongoose");
-const { connectDb } = require("../database/connectDb");
 
 const ecommerceSchema = new Schema({
     image: {
         type: String,
-        require: true
+        require: false
     },
     productName: {
         type: String,
@@ -18,11 +17,11 @@ const ecommerceSchema = new Schema({
         type: Number,
         require: true
     },
-    owner: {
-        type: mongoose.Type.ObjectId,
-        ref: "user",
-        require: true
-    }
+    // owner: {
+    //     type: mongoose.Type.ObjectId,
+    //     ref: "user",
+    //     require: true
+    // }
 })
 
 const ecommerceModel = new model('ecommerce', ecommerceSchema)

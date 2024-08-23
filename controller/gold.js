@@ -1,58 +1,45 @@
 const { ecommerceModel } = require("../models/Ecommerce.model");
 const express =  require('express')
-const fileUpload = require('../lib/index');
+// const fileUpload = require('../lib/index');
+const bodyParser = require('body-parser')
 // file upload for images
 // const fileUpload =  require("express-fileupload")
 const app = express()
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 
 // use express
 app.use(express.json())
 
 // use express file upload 
-app.use(fileUpload())
+// app.use(fileUpload())
 
 // use file upload
 
 // uploading the product
 const uploadGold = async(req, res)=>{
-    const {productName, ProductDescription, ProductPrice} = req.body
-    if(!productName, !ProductDescription, !ProductPrice){
-        return res.status(201).json({error: "please fill all inputs "})
-    }
-
-    // uploading images
-    let sampleFile;
-    let uploadPath;
-    let fileName;
-
-    if (!req.files || Object.keys(req.files).length === 0) {
-        res.status(400).send('No files were uploaded.');
-        return;
-    }
-
-    console.log('req.files >>>', req.files); // eslint-disable-line
-
-    sampleFile = req.files.image;
-
-    uploadPath = __dirname + '/uploads/' + sampleFile.name;
-
-    fileName = '/uploads/' + new Date().getTimezoneOffset() + uploadPath.name
-
-    sampleFile.mv(uploadPath, function(err) {
-        if (err) {
-        return res.status(500).send(err);
+    try {
+        const {productName, ProductDescription, ProductPrice} = req.body
+        if(!productName, !ProductDescription, !ProductPrice){
+            return res.status(201).json({error: "please fill all inputs "})
         }
 
-    });
+        // uploading images
+       
+        const createPost =  new ecommerceModel({productName, ProductDescription, ProductPrice})
 
-    const createPost = await new ecommerceModel({image: fileName, productName, ProductDescription, ProductPrice})
+        if(!createPost){
+        return res.status(201).json({error: "your product was not created"})
+        }
 
-    if(!createPost){
-       return res.status(201).json({error: "your product was not created"})
+        return res.status(200).json({message: "product was uploaded successfully", createPost})
+    } catch (error) {
+        console.log(error.message)
     }
-
-    return res.status(200).json({message: "product was uploaded successfully"})
 }
 
 
