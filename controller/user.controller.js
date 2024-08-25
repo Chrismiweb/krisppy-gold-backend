@@ -25,7 +25,7 @@ const register = async(req,res)=>{
        return res.status(401).json({error: "unable to signUp"})
     }
     res.status(201).json({message: "registered successfully", registerUser})
-
+    
 }
 
 const login = async(req,res)=>{
