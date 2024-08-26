@@ -43,7 +43,7 @@ const login = async(req,res)=>{
         res.status(404).json({error: "password is incorrect"})
     }
     const token = jwt.sign({ userId: registeredUser._id }, process.env.jwt_secret , { expiresIn: '1h' });
-    res.json({message: "registered succesfully", token})
+    res.json({message: "login succesfully", token})
 
 }
 module.exports = {register, login}
