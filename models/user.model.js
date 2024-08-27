@@ -1,5 +1,4 @@
 const { Schema, model } = require("mongoose");
-const { connectDb } = require("../database/connectDb");
 
 const userSchema = new Schema({
     email: {
@@ -11,9 +10,6 @@ const userSchema = new Schema({
     password: {
         type: String
     },
-    confirmPassword: {
-        type: String
-    },
     role: {
         type: String,
         enum: ['admin', 'user', 'seller'],
@@ -23,6 +19,6 @@ const userSchema = new Schema({
 
 
 })
-const userModel = new model('user', userSchema)
+const userModel = model('user', userSchema)
 
 module.exports = userModel

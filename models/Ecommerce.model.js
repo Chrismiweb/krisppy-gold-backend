@@ -18,13 +18,13 @@ const ecommerceSchema = new Schema({
         type: Number,
         require: true
     },
-    // owner: {
-    //     type: mongoose.Types.ObjectId,
-    //     ref: "user",
-    //     require: true
-    // }
+    owner: {
+        type: mongoose.Types.ObjectId,
+        ref: "user",
+        require: true
+    }
 })
 
-const ecommerceModel = new model('ecommerce', ecommerceSchema)
+const ecommerceModel = model('ecommerce', ecommerceSchema)
 
 module.exports = {ecommerceModel}

@@ -1,78 +1,95 @@
 const { ecommerceModel } = require("../models/Ecommerce.model");
-const express =  require('express')
-// const fileUpload = require('../lib/index');
-const bodyParser = require('body-parser')
-// file upload for images
-const fileUpload =  require("express-fileupload")
-const app = express()
-
-
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
-app.use(bodyParser.json())
-
-// use express
-app.use(express.json())
-
-// use express file upload 
-app.use(fileUpload())
+const path = require('path');
+const fs = require('fs');
+const userModel = require("../models/User.model");
 
 
 // uploading the product
-const uploadGold = async(req, res)=>{
-      const {productName, productDescription, productPrice} = req.body
-      if(!productName || !productDescription || !productPrice){
-        res.status(400).json({error: "please fill all credentials"})
+const uploadGold = async (req, res) => {
+
+    try {
+      const { productName, productDescription, productPrice } = req.body;
+  
+      // Validate required fields
+      if (!productName || !productDescription || !productPrice) {
+        return res.status(400).json({ error: "Please fill all credentials" });
+      }
+  
+      // Check if files were uploaded
+      if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+      }
+  
+      console.log('req.files >>>', req.files); 
+  
+      const blogFile = req.files.image;
+      const uploadsDir = path.join(__dirname, '../uploads/');
+  
+      // Create the uploads directory if it doesn't exist
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir);
+      }
+  
+      // Generate a unique filename using Date.now()
+      const fileName = `${Date.now()}-${blogFile.name}`;
+      const uploadPath = path.join(uploadsDir, fileName);
+  
+      // Move the file to the upload directory
+      blogFile.mv(uploadPath, (err) => {
+        if (err) {
+          return res.status(500).send(err);
+        }
+      });
+  
+      // Create a new product in the database
+      const createPost = new ecommerceModel({
+        productName,
+        productDescription,
+        productPrice,
+        image: fileName,
+        owner:req.user._id
+      });
+  
+      if (!createPost) {
+        return res.status(500).json({ error: "Your product was not created" });
       }
 
-        // uploading images
-      
-        // let blogFile;
-        // let uploadPath;
-        // let fileName;
-    
-        // if (!req.files || Object.keys(req.files).length === 0) {
-        //     res.status(400).send('No files were uploaded.');
-        //     return;
-        //   }
-        //   console.log('req.files >>>', req.files); // eslint-disable-line
-    
-        //     blogFile = req.files.image;
-        //     // file name with date (this is optional and not neccessary)
-            
-        //     uploadPath = __dirname + '/uploads/' + blogFile.name;
-
-        //     fileName = '/uploads/' + new Date().getTimezoneOffset() + blogFile.name;
-    
-        //     blogFile.mv(uploadPath, function(err) {
-        //         if (err) {
-        //             return res.status(500).send(err);
-        //             }
-        //     })
-
-        const createPost =  await ecommerceModel.create({ productName, productDescription, productPrice})
-
-        // if(!createPost){
-        // return res.status(201).json({error: "your product was not created"})
-        // }
-
-        return res.status(201).json({message: "product was uploaded successfully", createPost})
-   
-}
+      await createPost.save()
+  
+      return res.status(201).json({ message: "Product was uploaded successfully", createPost });
+  
+    } catch (error) {
+      console.error(error.message);
+      return res.status(500).json({ error: "An error occurred while uploading the product" });
+    }
+  };
+  
 
 // get one gold product using productName
 const getOneGold = async(req,res)=>{
-    const {productName} = req.params
+    try {
+        const {productName} = req.params
 
-    const getProduct = await ecommerceModel.findOne({productName})
+        const getProduct = await ecommerceModel.findOne({productName})
 
-    if(!getProduct){
-       return res.json({error: "the product you searched for is not available"})
+        if(!getProduct){
+        return res.json({error: "the product you searched for is not available"})
+        }
+
+        let user = getProduct.owner;
+        let owner = await userModel.findById(user);
+        let goldOwner;
+        if(!owner){
+            goldOwner = "Gues User"
+        }
+        goldOwner = owner.username;
+
+    // res.status(200).json({productName:getProduct.productName, productDescription:getProduct.productDescription, productPrice: getProduct.productPrice, image:getProduct.image, owner:goldOwner})
+    res.status(200).json({...getProduct._doc, owner:goldOwner})
+    } catch (error) {
+        console.log(error.message);
+        
     }
-
-    res.status(200).json({getProduct})
 }
 
 

@@ -4,7 +4,7 @@ require("dotenv").config()
 
 // connection string
 const connectString = process.env.connectString
-function connectDb(){
+async function connectDb(){
     mongoose.connect(connectString)
     console.log("database connected");
     

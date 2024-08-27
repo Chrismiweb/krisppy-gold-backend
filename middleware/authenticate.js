@@ -1,23 +1,33 @@
 const jwt = require('jsonwebtoken')
-const userModel = require('../models/user.model')
+const User = require('../models/User.model')
 require('dotenv').config()
 
 const isLoggin = async(req, res, next)=>{
     let token;
 
-    if(req.headers.authorization && req.headers.authorization.startWith('bearer')){
-        try {
-            token = req.headers.authorization.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.jwt_secret);
-            req.user = await userModel.findById(decoded.userId);
-            if(!req.user){
-                return res.status(401).json({error: "not authorized, pls login"});
-            }
-        } catch (error) {
-            console.log(error.message)
-            return res.status(403).json({error:"Invalid token"});
-        }
-    }
+	if (
+		req.headers.authorization &&
+		req.headers.authorization.startsWith('Bearer')
+	) {
+		try {
+			token = req.headers.authorization.split(' ')[1];
+
+			const decoded = jwt.verify(token, process.env.jwt_secret);
+			req.user = await User.findById(decoded.userId).select('-password');
+			if (!req.user) throw new Error('Not authorized');
+		} catch (error) {
+			console.log(error);
+			return res
+				.status(401)
+				.json({status: false, message: error.message});
+		}
+	}
+	if (!token) {
+		return res
+			.status(401)
+			.json({status: false, message: 'Not authorized, no token'});
+	}
+	next();
 }
 
 

@@ -1,16 +1,16 @@
-const userModel = require("../models/user.model")
+const userModel = require("../models/User.model")
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 
 // register new users
 const register = async(req,res)=>{
-    const {email, password , username, confirmPassword} = req.body
-    if(!email || !password || !username || !confirmPassword){
+    const {email, password , username} = req.body
+    if(!email || !password || !username){
        return res.status(401).json({error: "fill all credentials before registering"})
     }  
-    if(password !== confirmPassword){
-       return res.status(400).json({error: "password and confirm password does not match"})
-    }
+   //  if(password !== confirmPassword){
+   //     return res.status(400).json({error: "password and confirm password does not match"})
+   //  }
     const findRegisteredAcct = await userModel.findOne({email})
     if(findRegisteredAcct){
        return res.status(401).json({error: "user with this email address already exist"})
@@ -19,7 +19,7 @@ const register = async(req,res)=>{
      const salt = bcrypt.genSaltSync(10);
      const hashedPassword = bcrypt.hashSync(password, salt);
     // register new user
-    const registerUser = await userModel.create({email, password: hashedPassword, username, confirmPassword})
+    const registerUser = await userModel.create({email, password: hashedPassword, username})
    
     if(!registerUser){
        return res.status(401).json({error: "unable to signUp"})
