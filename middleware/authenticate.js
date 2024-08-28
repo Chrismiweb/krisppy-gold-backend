@@ -31,13 +31,17 @@ const isLoggin = async(req, res, next)=>{
 }
 
 
-const isAdmin = ()=>{
+const isAdmin = (req, res, next)=>{
     if(!req.user){
         return res.status(401).json({error: "not autorized, please try to log in"})
     }
     if(req.user.role !== "admin"){
         return res.status(401).json({error: "not autorized, you are not an admin"})
     }
+
+	next()
+
+
 }
 
 
